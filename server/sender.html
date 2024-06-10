@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Socket.IO chat</title>
+    <style>
+      body,
+      html {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      input {
+        opacity: 0;
+        cursor: pointer;
+      }
+      .container {
+        margin-top: 5%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 30%;
+        width: 80%;
+        border: 2px dashed #ccc;
+        border-radius: 2rem;
+        cursor: pointer;
+      }
+      span {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .heading {
+        cursor: pointer;
+        font-size: x-large;
+        color: #666;
+      }
+      .filecontainer {
+        margin-top: 5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        width: 80%;
+        border: 2px dashed #ccc;
+        border-radius: 1rem;
+        cursor: pointer;
+      }
+      .selectedfile {
+        width: 80%;
+        margin: 8px;
+        padding: 5px 5px 5px 5px;
+        border: 2px dashed #ccc;
+        border-radius: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="container"
+      onclick="document.getElementById('fileInput').click()"
+    >
+      <span class="heading">CLICK HERE TO SELECT</span>
+      <input type="file" id="fileInput" />
+    </div>
+    <div class="filecontainer">
+      <div class="selectedfile">Your privious send files !</div>
+    </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    var pc = new RTCPeerConnection();
+    var start = () =>
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          console.log(stream);
+          pc.addStream(stream);
+        })
+        .catch(console.error);
+    start();
+
+    pc.oniceconnectionstatechange = (e) =>
+      console.log("pc.iceConnState:", pc.iceConnectionState);
+    var addCandidate = (pc, can) =>
+      can && pc.addIceCandidate(can).catch(console.error);
+    pc.onicecandidate = (e) => {
+      console.log("pc.onicecandidate:", e.candidate);
+      addCandidate(pc, e.candidate);
+    };
+    socket.emit("signaling", { name: "sender" });
+    socket.on("start", () => {
+      console.log("starting");
+      pc.onnegotiationneeded = (e) => {
+        pc.createOffer()
+          .then((d) => {
+            console.log(d);
+            console.log("pc.offer_sdp:", d);
+            return pc.setLocalDescription(d);
+          })
+          .then(() => {
+            console.log("handshake", d);
+            socket.emit("handshake", d);
+          })
+          .catch(console.error);
+      };
+    });
+    socket.on("handshake", (ICE) => {
+      if (ICE) {
+        pc.setRemoteDescription(ICE);
+      }
+    });
+  </script>
+</html>

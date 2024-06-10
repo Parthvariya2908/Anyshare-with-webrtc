@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Socket.IO chat</title>
+    <style>
+      body,
+      html {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .container {
+        margin-top: 5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+        width: 80%;
+        border: 2px dashed #ccc;
+        border-radius: 1rem;
+        cursor: pointer;
+      }
+      .recievedfile {
+        width: 80%;
+        margin: 8px;
+        padding: 5px 5px 5px 5px;
+        border: 2px dashed #ccc;
+        border-radius: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bolder;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="recievedfile">Youre recevied files !</div>
+    </div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    var pc = new RTCPeerConnection();
+    socket.emit("signaling", { name: "receiver" });
+    socket.on("start", () => {
+      pc.onicecandidate = (e) => {
+        console.log("pc.onicecandidate:", e.candidate);
+        socket.emit("handshake", e.candidate);
+      };
+    });
+    socket.on("handshake", (ICE) => {
+      if (ICE) {
+        console.log(ICE);
+        pc.addIceCandidate(can).catch(console.log(error));
+      }
+    });
+  </script>
+</html>
