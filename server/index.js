@@ -15,7 +15,7 @@ app.get("/sender", (req, res) => {
 app.get("/receiver", (req, res) => {
   res.sendFile(join(__dirname, "receiver.html"));
 });
-
+// for connection
 var sender = -1;
 var receiver = -1;
 io.on("connection", (socket) => {
