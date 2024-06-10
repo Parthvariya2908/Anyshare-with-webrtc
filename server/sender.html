@@ -76,12 +76,13 @@
     </div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script>
     const socket = io();
     var pc = new RTCPeerConnection();
     var start = () =>
       navigator.mediaDevices
-        .getUserMedia({ audio: true })
+        .getUserMedia({ video: true, audio: true })
         .then((stream) => {
           console.log(stream);
           pc.addStream(stream);
@@ -93,30 +94,34 @@
       console.log("pc.iceConnState:", pc.iceConnectionState);
     var addCandidate = (pc, can) =>
       can && pc.addIceCandidate(can).catch(console.error);
-    pc.onicecandidate = (e) => {
-      console.log("pc.onicecandidate:", e.candidate);
-      addCandidate(pc, e.candidate);
-    };
+
     socket.emit("signaling", { name: "sender" });
     socket.on("start", () => {
       console.log("starting");
       pc.onnegotiationneeded = (e) => {
         pc.createOffer()
           .then((d) => {
-            console.log(d);
             console.log("pc.offer_sdp:", d);
             return pc.setLocalDescription(d);
           })
           .then(() => {
-            console.log("handshake", d);
-            socket.emit("handshake", d);
+            pc.onicecandidate = (e) => {
+              console.log("handshake", e);
+              socket.emit("handshake", {
+                ICE: pc.localDescription,
+                E: e.candidate,
+              });
+            };
           })
           .catch(console.error);
       };
     });
-    socket.on("handshake", (ICE) => {
-      if (ICE) {
-        pc.setRemoteDescription(ICE);
+    socket.on("handshake", (OB) => {
+      console.log("here is finaal : ", OB);
+      console.log("state info : ", pc.signalingState);
+      if (OB) {
+        pc.setRemoteDescription(OB.ICE);
+        addCandidate(pc, OB.E);
       }
     });
   </script>

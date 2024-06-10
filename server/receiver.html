@@ -38,26 +38,84 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="recievedfile">Youre recevied files !</div>
-    </div>
+    <table>
+      <tr>
+        <td><video id="v1" autoplay width="200"></video></td>
+        <td><video id="v2" autoplay></video></td>
+      </tr>
+      <tr>
+        <td id="v1info">0x0</td>
+        <td id="v2info">0x0</td>
+      </tr>
+    </table>
+    <button onclick="start()">Start!</button>
   </body>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    const v2info = document.getElementById("v2info");
+    const v2 = document.getElementById("v2");
     const socket = io();
     var pc = new RTCPeerConnection();
+    var start = () =>
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          console.log(stream);
+          pc.addStream(stream);
+        })
+        .catch(console.error);
+    start();
+
+    pc.oniceconnectionstatechange = (e) =>
+      console.log("pc.iceConnState:", pc.iceConnectionState);
+    var addCandidate = (pc, can) =>
+      can && pc.addIceCandidate(can).catch(console.error);
+
     socket.emit("signaling", { name: "receiver" });
-    socket.on("start", () => {
-      pc.onicecandidate = (e) => {
-        console.log("pc.onicecandidate:", e.candidate);
-        socket.emit("handshake", e.candidate);
-      };
-    });
-    socket.on("handshake", (ICE) => {
-      if (ICE) {
-        console.log(ICE);
-        pc.addIceCandidate(can).catch(console.log(error));
+    socket.on("handshake", (OB) => {
+      console.log(OB);
+      if (OB) {
+        pc.setRemoteDescription(OB.ICE);
+        addCandidate(pc, OB.E);
+        pc.createAnswer()
+          .then((d) => {
+            console.log("pc.answer_sdp:", d.sdp);
+            return pc.setLocalDescription(d);
+          })
+          .then(() => {
+            pc.onicecandidate = (e) => {
+              console.log("handshake", e);
+              socket.emit("handshake", {
+                ICE: pc.localDescription,
+                E: e.candidate,
+              });
+            };
+          })
+          .catch(console.error);
       }
     });
+    var attachVideo = (videoTag, vinfo, stream) => {
+      videoTag.srcObject = stream;
+      videoTag.addEventListener(
+        "loadedmetadata",
+        (e) => update(vinfo, dimensions(videoTag)),
+        false
+      );
+    };
+    pc.ontrack = (e) => {
+      console.log("pc2.ontrack, stream id:", e.streams[0]);
+      console.log(
+        "pc2.ontrack, track id:",
+        e.track.id,
+        "label:",
+        e.track.label,
+        "kind:",
+        e.track.kind,
+        e.track
+      );
+
+      return attachVideo(v2, v2info, e.streams[0]);
+    };
   </script>
 </html>
