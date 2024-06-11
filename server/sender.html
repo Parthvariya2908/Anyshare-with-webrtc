@@ -75,8 +75,9 @@
       <div class="selectedfile">Your privious send files !</div>
     </div>
   </body>
-  <script src="/socket.io/socket.io.js"></script>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
   <script>
     const socket = io();
     var pc = new RTCPeerConnection();
@@ -119,7 +120,7 @@
     socket.on("handshake1", (OB) => {
       console.log("here is finaal : ", OB);
       console.log("state info : ", pc.signalingState);
-      if (OB) {
+      if (OB.E && OB.ICE) {
         pc.setRemoteDescription(OB.ICE);
         addCandidate(pc, OB.E);
       }

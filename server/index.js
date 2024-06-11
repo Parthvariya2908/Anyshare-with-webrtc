@@ -6,7 +6,12 @@ const { Server } = require("socket.io");
 const { start } = require("node:repl");
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 app.use(bodyParser.json());
 
 app.get("/sender", (req, res) => {

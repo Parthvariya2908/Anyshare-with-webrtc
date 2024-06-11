@@ -51,7 +51,8 @@
     <button onclick="start()">Start!</button>
   </body>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
   <script>
     const v2info = document.getElementById("v2info");
     const v2 = document.getElementById("v2");
@@ -97,11 +98,6 @@
     });
     var attachVideo = (videoTag, vinfo, stream) => {
       videoTag.srcObject = stream;
-      videoTag.addEventListener(
-        "loadedmetadata",
-        (e) => update(vinfo, dimensions(videoTag)),
-        false
-      );
     };
     pc.ontrack = (e) => {
       console.log("pc2.ontrack, stream id:", e.streams[0]);
