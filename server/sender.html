@@ -64,16 +64,17 @@
     </style>
   </head>
   <body>
-    <div
-      class="container"
-      onclick="document.getElementById('fileInput').click()"
-    >
-      <span class="heading">CLICK HERE TO SELECT</span>
-      <input type="file" id="fileInput" />
-    </div>
-    <div class="filecontainer">
-      <div class="selectedfile">Your privious send files !</div>
-    </div>
+    <table>
+      <tr>
+        <td><video id="v1" autoplay width="200"></video></td>
+        <td><video id="v2" autoplay></video></td>
+      </tr>
+      <tr>
+        <td id="v1info">0x0</td>
+        <td id="v2info">0x0</td>
+      </tr>
+    </table>
+    <button onclick="start()">Start!</button>
   </body>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
@@ -125,5 +126,24 @@
         addCandidate(pc, OB.E);
       }
     });
+    const v1info = document.getElementById("v1info");
+    const v1 = document.getElementById("v1");
+    var attachVideo = (videoTag, vinfo, stream) => {
+      videoTag.srcObject = stream;
+    };
+    pc.ontrack = (e) => {
+      console.log("pc2.ontrack, stream id:", e.streams[0]);
+      console.log(
+        "pc2.ontrack, track id:",
+        e.track.id,
+        "label:",
+        e.track.label,
+        "kind:",
+        e.track.kind,
+        e.track
+      );
+
+      return attachVideo(v1, v2info, e.streams[0]);
+    };
   </script>
 </html>
