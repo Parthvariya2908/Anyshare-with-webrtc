@@ -36,6 +36,14 @@ io.on("connection", (socket) => {
     console.log("handshake");
     socket.broadcast.emit("handshake", ICE);
   });
+  socket.on("disconnect", (ob) => {
+    if (ob.name == "sender") {
+      sender = -1;
+    }
+    if (ob.name == "receiver") {
+      receiver = -1;
+    }
+  });
 });
 
 server.listen(3000, () => {

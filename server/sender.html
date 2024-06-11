@@ -124,5 +124,11 @@
         addCandidate(pc, OB.E);
       }
     });
+
+    window.addEventListener("beforeunload", (event) => {
+      socket.emit("disconnect", { name: "sender" });
+      event.preventDefault();
+      event.returnValue = "";
+    });
   </script>
 </html>
