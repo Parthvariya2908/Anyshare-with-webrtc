@@ -117,10 +117,5 @@
 
       return attachVideo(v2, v2info, e.streams[0]);
     };
-    window.addEventListener("beforeunload", (event) => {
-      socket.emit("disconnect", { name: "receiver" });
-      event.preventDefault();
-      event.returnValue = "";
-    });
   </script>
 </html>

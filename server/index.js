@@ -30,20 +30,13 @@ io.on("connection", (socket) => {
     }
     if (sender == 1 && receiver == 1) {
       io.emit("start", {});
+      sender = -1;
+      receiver = -1;
     }
   });
   socket.on("handshake", (ICE) => {
     console.log("handshake");
     socket.broadcast.emit("handshake", ICE);
-  });
-  socket.on("disconnect", (ob) => {
-    console.log(ob.name, -1);
-    if (ob.name == "sender") {
-      sender = -1;
-    }
-    if (ob.name == "receiver") {
-      receiver = -1;
-    }
   });
 });
 
