@@ -23,20 +23,22 @@ io.on("connection", (socket) => {
   socket.on("signaling", (ob) => {
     console.log(ob);
     if (ob.name == "sender") {
-      sender = 1;
+      sender = socket.id;
     }
     if (ob.name == "receiver") {
-      receiver = 1;
+      receiver = socket.id;
     }
-    if (sender == 1 && receiver == 1) {
+    if (sender != -1 && receiver != -1) {
       io.emit("start", {});
-      sender = -1;
-      receiver = -1;
     }
   });
-  socket.on("handshake", (ICE) => {
+  socket.on("handshake1", (ICE) => {
     console.log("handshake");
-    socket.broadcast.emit("handshake", ICE);
+    io.to(receiver).emit("handshake2", ICE);
+  });
+  socket.on("handshake2", (ICE) => {
+    console.log("handshake");
+    io.to(sender).emit("handshake1", ICE);
   });
 });
 

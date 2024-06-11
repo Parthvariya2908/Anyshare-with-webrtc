@@ -73,7 +73,7 @@
       can && pc.addIceCandidate(can).catch(console.error);
 
     socket.emit("signaling", { name: "receiver" });
-    socket.on("handshake", (OB) => {
+    socket.on("handshake2", (OB) => {
       console.log(OB);
       if (OB) {
         pc.setRemoteDescription(OB.ICE);
@@ -85,8 +85,8 @@
           })
           .then(() => {
             pc.onicecandidate = (e) => {
-              console.log("handshake", e);
-              socket.emit("handshake", {
+              console.log("handshake2", e);
+              socket.emit("handshake2", {
                 ICE: pc.localDescription,
                 E: e.candidate,
               });

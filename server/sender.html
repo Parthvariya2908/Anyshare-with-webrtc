@@ -106,8 +106,8 @@
           })
           .then(() => {
             pc.onicecandidate = (e) => {
-              console.log("handshake", e);
-              socket.emit("handshake", {
+              console.log("handshake1", e);
+              socket.emit("handshake1", {
                 ICE: pc.localDescription,
                 E: e.candidate,
               });
@@ -116,7 +116,7 @@
           .catch(console.error);
       };
     });
-    socket.on("handshake", (OB) => {
+    socket.on("handshake1", (OB) => {
       console.log("here is finaal : ", OB);
       console.log("state info : ", pc.signalingState);
       if (OB) {
