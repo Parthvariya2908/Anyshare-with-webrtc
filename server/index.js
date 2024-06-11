@@ -37,6 +37,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("handshake", ICE);
   });
   socket.on("disconnect", (ob) => {
+    console.log(ob.name, -1);
     if (ob.name == "sender") {
       sender = -1;
     }
