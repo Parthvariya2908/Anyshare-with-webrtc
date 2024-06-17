@@ -54,8 +54,6 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
   <script>
-    const v2info = document.getElementById("v2info");
-    const v2 = document.getElementById("v2");
     const socket = io();
     var pc = new RTCPeerConnection();
     var start = () =>
@@ -99,6 +97,8 @@
     var attachVideo = (videoTag, vinfo, stream) => {
       videoTag.srcObject = stream;
     };
+    const v2info = document.getElementById("v2info");
+    const v2 = document.getElementById("v2");
     pc.ontrack = (e) => {
       console.log("pc2.ontrack, stream id:", e.streams[0]);
       console.log(

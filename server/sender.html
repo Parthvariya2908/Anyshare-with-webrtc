@@ -126,24 +126,5 @@
         addCandidate(pc, OB.E);
       }
     });
-    const v1info = document.getElementById("v1info");
-    const v1 = document.getElementById("v1");
-    var attachVideo = (videoTag, vinfo, stream) => {
-      videoTag.srcObject = stream;
-    };
-    pc.ontrack = (e) => {
-      console.log("pc2.ontrack, stream id:", e.streams[0]);
-      console.log(
-        "pc2.ontrack, track id:",
-        e.track.id,
-        "label:",
-        e.track.label,
-        "kind:",
-        e.track.kind,
-        e.track
-      );
-
-      return attachVideo(v1, v2info, e.streams[0]);
-    };
   </script>
 </html>

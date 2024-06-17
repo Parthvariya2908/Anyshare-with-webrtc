@@ -28,10 +28,10 @@ io.on("connection", (socket) => {
   socket.on("signaling", (ob) => {
     console.log(ob);
     if (ob.name == "sender") {
-      sender = socket.id;
+      sender = 1;
     }
     if (ob.name == "receiver") {
-      receiver = socket.id;
+      receiver = 1;
     }
     if (sender != -1 && receiver != -1) {
       io.emit("start", {});
@@ -39,11 +39,13 @@ io.on("connection", (socket) => {
   });
   socket.on("handshake1", (ICE) => {
     console.log("handshake");
-    io.to(receiver).emit("handshake2", ICE);
+    // io.to(receiver).emit("handshake2", ICE);
+    io.emit("handshake2", ICE);
   });
   socket.on("handshake2", (ICE) => {
     console.log("handshake");
-    io.to(sender).emit("handshake1", ICE);
+    // io.to(sender).emit("handshake1", ICE);
+    io.emit("handshake1", ICE);
   });
 });
 
